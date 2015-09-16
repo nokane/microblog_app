@@ -94,3 +94,9 @@ def profile(username):
         similar=similar,
         common=common
     )
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('username', None)
+    flash('Logged out.')
+    return redirect(url_for('index'))
