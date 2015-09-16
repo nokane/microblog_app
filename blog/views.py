@@ -54,3 +54,43 @@ def add_post():
         User(session['username']).add_post(title, tags, text)
 
     return redirect(url_for('index'))
+
+@app.route('/like_post/<post_id>')
+def like_post(post_id):
+    username = session.get('username')
+
+    if not username:
+        flash('You must be logged in to like a post.')
+        return redirect(url_for('login'))
+
+    User(username).like_post(post_id)
+
+    flash('Liked post.')
+    return redirect(request.referrer)
+
+@app.route('/profile/<username>')
+def profile(username):
+    logged_in_username = session.get('username')
+    user_being_viewed_username = username
+
+    user_being_viewed = User(user_being_viewed_username)
+    posts = user_being_viewed.get_recent_posts()
+
+    similar = []
+    common = []
+
+    if logged_in_username:
+        logged_in_user = User(logged_in_username)
+
+        if logged_in_user.username == user_being_viewed.username:
+            similar = logged_in_user.get_similar_users()
+        else:
+            common = logged_in_user.get_commonality_of_user(user_being_viewed)
+
+    return render_template(
+        'profile.html',
+        username=username,
+        posts=posts,
+        similar=similar,
+        common=common
+    )
