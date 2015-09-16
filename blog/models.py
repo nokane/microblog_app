@@ -39,3 +39,10 @@ class User:
             tag = graph.merge_one("Tag", "name", t)
             rel = Relationship(tag, "TAGGED", post)
             graph.create(rel)
+
+    def verify_password(self, password):
+        user = self.find()
+        if user:
+            return bcrypt.verify(password, user['password'])
+        else:
+            return False
