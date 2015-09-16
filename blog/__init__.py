@@ -1,13 +1,11 @@
+from .views import app
 from .models import graph
 
-nodes = [
-    ('User', 'username'),
-    ('Post', 'id'),
-    ('Tag', 'name')
-]
+def create_uniqueness_constraint(label, property):
+    query = "CREATE CONSTRAINT ON (n:{label}) ASSERT n.{property} IS UNIQUE"
+    query = query.format(label=label, property=property)
+    graph.cypher.execute(query)
 
-for label, property in nodes:
-    try:
-        graph.schema.create_uniqueness_constraint(label, property)
-    except:
-        continue
+create_uniqueness_constraint("User", "username")
+create_uniqueness_constraint("Tag", "name")
+create_uniqueness_constraint("Post", "id")
