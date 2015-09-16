@@ -3,6 +3,11 @@ from flask import Flask, request, session, redirect, url_for, render_template, f
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    posts = get_todays_recent_posts()
+    return render_template('index.html', posts=posts)
+
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == 'POST':
@@ -36,6 +41,12 @@ def login():
             return redirect(url_for('index'))
 
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    flash('Logged out.')
+    return redirect(url_for('index'))
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
@@ -94,9 +105,3 @@ def profile(username):
         similar=similar,
         common=common
     )
-
-@app.route('/logout', methods=['GET'])
-def logout():
-    session.pop('username', None)
-    flash('Logged out.')
-    return redirect(url_for('index'))
