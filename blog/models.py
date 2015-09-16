@@ -20,3 +20,22 @@ class User:
             return True
         else:
             return False
+
+    def add_post(self, title, tags, text):
+        user = self.find()
+        post = Node(
+            "Post",
+            id=str(uuid.uuid4()),
+            title=title,
+            text=text,
+            timestamp=timestamp(),
+            date=date()
+        )
+        rel = Relationship(user, "PUBLISHED", post)
+        graph.create(rel)
+
+        tags = [x.strip() for x in tags.lower().split(',')]
+        for t in set(tags):
+            tag = graph.merge_one("Tag", "name", t)
+            rel = Relationship(tag, "TAGGED", post)
+            graph.create(rel)
